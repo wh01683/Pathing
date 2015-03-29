@@ -6,11 +6,14 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import java.util.Vector;
 
 public class Screen extends JPanel {
     private int verticalLines = 300, horizontalLines = 300;
     private Vector<Node> nodesOnScreen = new Vector<Node>(5);
+    private Vector<Edge> edgesOnScreen = new Vector<Edge>(5);
+    private Random r = new Random();
     private int pixelSize = 3;
 
 
@@ -123,6 +126,8 @@ public class Screen extends JPanel {
      * @param xLBounds x coordinates of the new node will be greater than this value
      * @param yLBounds y coordinates of the new node will be greater than this value
      * @param amount number of Nodes the method will generate and add to the vector
+     *
+     * ToDo: add graphical representation for the nodes.
      * */
     public void addRandomNodes(int xHBounds, int yBounds, int xLBounds, int yLBounds, int amount){
         Node temp = new Node(1,1);
@@ -130,8 +135,25 @@ public class Screen extends JPanel {
             this.nodesOnScreen.add(temp.getRandomNode(xHBounds, yBounds, xLBounds, yLBounds));
         }
     }
-
+    /**
+     * adds one to 3 edges to each node currently on the screen. The edge connected to the currently selected node is
+     * chosen at random from the current nodes on screen vector by retrieving the node at a randomly generated index
+     * between the beginning and the last index containing a node.
+     *
+     * ToDo: add graphic representation for the edges.
+     * */
     public void addRandomEdges(){
+try {
+    for (Node node : nodesOnScreen) {
 
+        for (int i = 0; i < r.nextInt(3) + 1; i++) {
+
+            edgesOnScreen.add(new Edge(node, nodesOnScreen.elementAt(r.nextInt(nodesOnScreen.lastIndexOf(node)))));
+        }
+    }
+}catch (NullPointerException p){
+    System.out.printf("Null pointer caught in Screen : addRandomEdges.\nLikely attempting to create a new edge with" +
+            " a node which does not exist.");
+}
     }
 }
