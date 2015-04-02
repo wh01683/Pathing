@@ -1,5 +1,7 @@
 package Pathing;
 
+import javafx.scene.shape.Circle;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -52,6 +54,8 @@ public class Screen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 updateSize(Integer.parseInt(width.getText()), Integer.parseInt(height.getText()));
+                addRandomNodes(Integer.parseInt(height.getText()), Integer.parseInt(width.getText()), 0, 0, 30);
+                addRandomEdges();
             }
         });
         contentFrame.setSize(new Dimension(800, 600));
@@ -106,6 +110,13 @@ public class Screen extends JPanel {
         contentFrame.setVisible(true);
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintNodesToScreen((Graphics2D)g);
+        paintEdgesToScreen((Graphics2D)g);
+    }
+
     /**
      * updates the size of the window
      *
@@ -134,6 +145,22 @@ public class Screen extends JPanel {
         for (int i = 0; i <amount; i++){
             this.nodesOnScreen.add(temp.getRandomNode(xHBounds, yBounds, xLBounds, yLBounds));
         }
+    }
+
+    public void paintNodesToScreen(Graphics2D g2){
+
+        for(Node n : nodesOnScreen){
+            g2.drawOval(n.getX(), n.getY(), 15, 15);
+        }
+        repaint();
+    }
+
+    public void paintEdgesToScreen(Graphics2D g2){
+        for(Edge e: edgesOnScreen){
+            g2.drawLine(e.getFrontNode().getX(), e.getFrontNode().getY(),
+                    e.getBackNode().getX(), e.getBackNode().getY());
+        }
+        repaint();
     }
     /**
      * adds one to 3 edges to each node currently on the screen. The edge connected to the currently selected node is
