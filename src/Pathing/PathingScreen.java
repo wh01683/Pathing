@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by robert on 4/3/2015.
@@ -16,6 +17,9 @@ import java.util.*;
 public class PathingScreen extends JPanel {
     private static Vector<Node> nodesOnScreen = new Vector<Node>(5);
     private static Vector<Edge> edgesOnScreen = new Vector<Edge>(5);
+    private static PriorityQueue<Node> nodePriorityQueue;
+    private static PriorityQueue<Node> priorityQueue;
+    private static HashSet<Node> unvisitedNodes;
     private int verticalLines = 800, horizontalLines = 1200;
     private JTextField width;
     private JTextField height;
@@ -90,7 +94,19 @@ public class PathingScreen extends JPanel {
             }
         });
 
+        this.steppingDjikstraSButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                dijkstraTraversal();
+            }
+        });
 
+        this.delayedDjikstraSButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                delayedDijkstraTraversal(Long.parseLong(delayInMilliseconds.getText()));
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -148,6 +164,22 @@ public class PathingScreen extends JPanel {
         repaint();
     }
 
+    public void paintSingleEdge(Edge e) {
+        Graphics2D red = (Graphics2D) displayPanel.getGraphics();
+        red.setColor(Color.RED);
+        red.draw(new Line2D.Double((e.getFrontNode().getX()) + (Integer.parseInt(nodeRadius.getText()) / 2),
+                (e.getFrontNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                (e.getBackNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                (e.getBackNode().getY()) + (Integer.parseInt(nodeRadius.getText()) / 2)));
+    }
+
+    public void paintSingleNode(Node n) {
+        Graphics2D red = (Graphics2D) displayPanel.getGraphics();
+        red.setColor(Color.RED);
+        red.fillOval(n.getX(), n.getY(), n.getRadius(), n.getRadius());
+
+    }
+
     public void paintEdgesToScreen(Graphics2D g2) {
         for (Edge e : edgesOnScreen) {
             g2.draw(new Line2D.Double(e.getFrontNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2),
@@ -155,6 +187,7 @@ public class PathingScreen extends JPanel {
                     (e.getBackNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2))));
         }
 
+        populateDijsktraData();
         repaint();
     }
 
@@ -185,7 +218,79 @@ public class PathingScreen extends JPanel {
     }
 
 
-    public void djikstraTraversal() {
+    public void delayedDijkstraTraversal(long delayTimer) {
+
+        try {
+            Node source = priorityQueue.peek();
+            Node previousNode;
+            for (Node v : priorityQueue) {
+                if (!(v.equals(source))) {
+                    v.setDistanceFromSource(2000000000);
+                }
+            }
+
+            while (!priorityQueue.isEmpty()) {
+                Node current = priorityQueue.remove();
+
+                for (Node n : current.getNeighbors()) {
+                    double alt = current.getDistanceFromSource() + new Edge(current, n).getWeight();
+
+                    if (alt < n.getDistanceFromSource()) {
+                        paintSingleNode(current);
+                        paintSingleEdge(new Edge(current, n));
+                        paintSingleNode(n);
+                        priorityQueue.remove(n);
+                        n.setDistanceFromSource(alt);
+                        priorityQueue.add(n);
+                        current = n;
+                    }
+                }
+                TimeUnit.MILLISECONDS.sleep(delayTimer);
+
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void dijkstraTraversal() {
+
+
+        dijkstraStep();
+
+    }
+
+    public void dijkstraStep() {
+
+        if (!priorityQueue.isEmpty()) {
+            Node current = priorityQueue.remove();
+
+            for (Node n : current.getNeighbors()) {
+                current = dijkstraSecondStep(current, n);
+            }
+
+        }
+    }
+
+    public Node dijkstraSecondStep(Node current, Node n) {
+        double alt = current.getDistanceFromSource() + new Edge(current, n).getWeight();
+
+        if (alt < n.getDistanceFromSource()) {
+            paintSingleNode(current);
+            paintSingleEdge(new Edge(current, n));
+            paintSingleNode(n);
+            priorityQueue.remove(n);
+            n.setDistanceFromSource(alt);
+            priorityQueue.add(n);
+            return n;
+        } else return current;
+    }
+
+    /**
+     * populates static node priority queue with nodes from the current nodesOnScreen vector
+     */
+    public void populateDijsktraData() {
         Comparator<Node> lowestWeight = new Comparator<Node>() {
             @Override
             public int compare(Node node1, Node node2) {
@@ -204,17 +309,52 @@ public class PathingScreen extends JPanel {
                 }
 
 
+
                 return (int) Math.round(Math.abs(minEdgeWeightNode1 - minEdgeWeightNode2));
             }
         };
 
-        PriorityQueue<Node> edgePriorityQueue = new PriorityQueue<>(edgesOnScreen.size(),
+        Comparator<Node> lowestDistance = new Comparator<Node>() {
+            @Override
+            public int compare(Node node, Node t1) {
+                return (int) Math.abs(node.getDistanceFromSource() - node.getDistanceFromSource());
+            }
+        };
+
+        nodePriorityQueue = new PriorityQueue<>(nodesOnScreen.size(),
                 lowestWeight);
-        edgePriorityQueue.addAll(nodesOnScreen);
+        priorityQueue = new PriorityQueue<>(nodesOnScreen.size(), lowestDistance);
+        nodePriorityQueue.addAll(nodesOnScreen);
+        priorityQueue.addAll(nodesOnScreen);
+        unvisitedNodes = new HashSet<>(nodePriorityQueue);
 
-        HashSet<Node> unvisitedNodes = new HashSet<>(nodesOnScreen);
+        Node source = priorityQueue.peek();
+        Node previousNode;
+
+        for (Node v : priorityQueue) {
+            if (!(v.equals(source))) {
+                v.setDistanceFromSource(2000000000);
+            }
+        }
 
 
+    }
+
+    /**
+     * gets the minimum edge of the given edge vector
+     *
+     * @param edges edge vector passed to method
+     * @return returns edge with the minimum weight
+     */
+    public Edge minEdge(Vector<Edge> edges) {
+        Edge minEdge = edges.firstElement();
+
+        for (Edge e : edges) {
+            if (e.getWeight() < minEdge.getWeight()) {
+                minEdge = e;
+            }
+        }
+        return minEdge;
     }
 
 }

@@ -10,7 +10,10 @@ public class Node {
 
     private static int radius = 16;
     private int x;
+
+
     private int y;
+    private double distanceFromSource = 0;
     private Vector<Node> neighbors = new Vector<>(3);
     private Vector<Edge> edges = new Vector<>(3);
     private Random r = new Random();
@@ -64,4 +67,12 @@ public class Node {
         return this.edges;
     }
 
+
+    public double getDistanceFromSource() {
+        return distanceFromSource;
+    }
+
+    public void setDistanceFromSource(double distanceFromSource) {
+        this.distanceFromSource = distanceFromSource;
+    }
 }
