@@ -12,7 +12,7 @@ public class Edge {
 
     /**
      * creates a new edge between two nodes. Node positions are ambiguous. Calculates the "weight" of the
-     * edge as the distance (hypotenuse) betweent he two nodes using the X and Y coordinates of the front
+     * edge as the distance (hypotenuse) between he two nodes using the X and Y coordinates of the front
      * and back nodes.
      * */
     public Edge(Node newFrontNode, Node newBackNode){

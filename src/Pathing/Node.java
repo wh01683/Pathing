@@ -10,6 +10,7 @@ public class Node {
 
     private int x;
     private int y;
+    private static int radius = 16;
     private Vector<Node> neighbors;
     private Random r = new Random();
 
@@ -36,6 +37,14 @@ public class Node {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getRadius(){
+        return radius;
+    }
+
+    public void setRadius(int newRadius){
+        radius = newRadius;
     }
 
     public Vector<Node> getNeighbors() {
