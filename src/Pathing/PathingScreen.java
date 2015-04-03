@@ -12,8 +12,9 @@ import java.util.Vector;
  * Created by robert on 4/3/2015.
  */
 public class PathingScreen extends JPanel {
+    private static Vector<Node> nodesOnScreen = new Vector<Node>(5);
+    private static Vector<Edge> edgesOnScreen = new Vector<Edge>(5);
     private int verticalLines = 800, horizontalLines = 1200;
-
     private JTextField width;
     private JTextField height;
     private JButton drawNodesButton;
@@ -31,21 +32,7 @@ public class PathingScreen extends JPanel {
     private JPanel outerPanel;
     private JTextField nodeRadius;
     private JButton resizeButton;
-
-    private Vector<Node> nodesOnScreen = new Vector<Node>(5);
-    private Vector<Edge> edgesOnScreen = new Vector<Edge>(5);
     private Random r = new Random();
-
-
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("bank_gui");
-        frame.setContentPane(new PathingScreen().outerPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-
-    }
 
 
     public PathingScreen() {
@@ -75,7 +62,7 @@ public class PathingScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent l) {
                 displayPanel.getGraphics().clearRect(displayPanel.getX(), displayPanel.getY(),
-                        displayPanel.getX()+displayPanel.getWidth(), displayPanel.getY()+displayPanel.getHeight());
+                        displayPanel.getX() + displayPanel.getWidth(), displayPanel.getY() + displayPanel.getHeight());
                 nodesOnScreen.removeAllElements();
                 edgesOnScreen.removeAllElements();
             }
@@ -85,23 +72,22 @@ public class PathingScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
 
-                Color background = new Color(60,63,65);
-                Graphics2D graphics2D = (Graphics2D)displayPanel.getGraphics();
-                graphics2D.setColor(background);
-                paintEdgesToScreen(graphics2D);
-                paintNodesToScreen(graphics2D);
-                nodesOnScreen.removeAllElements();
-                edgesOnScreen.removeAllElements();
-                repaint();
+                displayPanel.setBounds(displayPanel.getX(), displayPanel.getY(), Integer.parseInt(width.getText()),
+                        Integer.parseInt(height.getText()));
             }
         });
 
 
-
-
     }
 
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("bank_gui");
+        frame.setContentPane(new PathingScreen().outerPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
 
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -138,7 +124,7 @@ public class PathingScreen extends JPanel {
     public void addRandomNodes(int xHBounds, int yHBounds, int xLBounds, int yLBounds, int amount) {
         Node temp = new Node(1, 1);
         for (int i = 0; i < amount; i++) {
-            this.nodesOnScreen.add(temp.getRandomNode(xHBounds, yHBounds, xLBounds, yLBounds));
+            nodesOnScreen.add(temp.getRandomNode(xHBounds, yHBounds, xLBounds, yLBounds));
         }
     }
 
@@ -180,7 +166,4 @@ public class PathingScreen extends JPanel {
         }
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
 }
