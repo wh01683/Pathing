@@ -12,6 +12,7 @@ public class Node {
     private int x;
     private int y;
     private Vector<Node> neighbors = new Vector<>(3);
+    private Vector<Edge> edges = new Vector<>(3);
     private Random r = new Random();
 
     public Node(int newX, int newY){
@@ -54,4 +55,13 @@ public class Node {
     public void addNeighbor(Node newNeighbor) {
         this.neighbors.add(newNeighbor);
     }
+
+    public void addEdge(Edge newEdge) {
+        this.edges.add(newEdge);
+    }
+
+    public Vector getEdges() {
+        return this.edges;
+    }
+
 }

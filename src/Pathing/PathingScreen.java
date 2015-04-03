@@ -8,8 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by robert on 4/3/2015.
@@ -133,7 +132,6 @@ public class PathingScreen extends JPanel {
      * @param yLBounds y coordinates of the new node will be greater than this value
      * @param amount   number of Nodes the method will generate and add to the vector
      *                 <p>
-     *                 ToDo: add graphical representation for the nodes.
      */
     public void addRandomNodes(int xHBounds, int yHBounds, int xLBounds, int yLBounds, int amount) {
         Node temp = new Node(1, 1);
@@ -165,7 +163,6 @@ public class PathingScreen extends JPanel {
      * chosen at random from the current nodes on screen vector by retrieving the node at a randomly generated index
      * between the beginning and the last index containing a node.
      * <p>
-     * ToDo: add graphic representation for the edges.
      */
     public void addRandomEdges() {
         try {
@@ -175,16 +172,49 @@ public class PathingScreen extends JPanel {
                     int targetNodeIndex = r.nextInt(nodesOnScreen.size());
                     Edge tempEdge = new Edge(node, nodesOnScreen.elementAt(targetNodeIndex));
                     node.addNeighbor(nodesOnScreen.elementAt(targetNodeIndex));
+                    node.addEdge(tempEdge);
                     nodesOnScreen.elementAt(targetNodeIndex).addNeighbor(node);
+                    nodesOnScreen.elementAt(targetNodeIndex).addEdge(tempEdge);
                     edgesOnScreen.add(tempEdge);
-
-
                 }
             }
         } catch (NullPointerException p) {
             System.out.printf("Null pointer caught in Screen : addRandomEdges.\nLikely attempting to create a new edge with" +
                     " a node which does not exist.");
         }
+    }
+
+
+    public void djikstraTraversal() {
+        Comparator<Node> lowestWeight = new Comparator<Node>() {
+            @Override
+            public int compare(Node node1, Node node2) {
+                double minEdgeWeightNode1 = ((Edge) node1.getEdges().firstElement()).getWeight();
+                for (Edge e : (Vector<Edge>) node1.getEdges()) {
+                    if (e.getWeight() <= minEdgeWeightNode1) {
+                        minEdgeWeightNode1 = e.getWeight();
+                    }
+                }
+                double minEdgeWeightNode2 = ((Edge) node2.getEdges().firstElement()).getWeight();
+
+                for (Edge e : (Vector<Edge>) node2.getEdges()) {
+                    if (e.getWeight() <= minEdgeWeightNode2) {
+                        minEdgeWeightNode2 = e.getWeight();
+                    }
+                }
+
+
+                return (int) Math.round(Math.abs(minEdgeWeightNode1 - minEdgeWeightNode2));
+            }
+        };
+
+        PriorityQueue<Node> edgePriorityQueue = new PriorityQueue<>(edgesOnScreen.size(),
+                lowestWeight);
+        edgePriorityQueue.addAll(nodesOnScreen);
+
+        HashSet<Node> unvisitedNodes = new HashSet<>(nodesOnScreen);
+
+
     }
 
 }
