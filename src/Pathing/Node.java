@@ -1,17 +1,17 @@
 package Pathing;
 
-import java.util.Vector;
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * Created by robert on 3/26/2015.
  */
 public class Node {
 
+    private static int radius = 16;
     private int x;
     private int y;
-    private static int radius = 16;
-    private Vector<Node> neighbors;
+    private Vector<Node> neighbors = new Vector<>(3);
     private Random r = new Random();
 
     public Node(int newX, int newY){

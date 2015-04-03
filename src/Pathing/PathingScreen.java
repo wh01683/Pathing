@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Random;
 import java.util.Vector;
 
@@ -38,12 +40,21 @@ public class PathingScreen extends JPanel {
     public PathingScreen() {
 
         displayPanel.setVisible(true);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                displayPanel.setBounds(e.getComponent().getX(), e.getComponent().getY(), e.getComponent().getWidth() - 20, e.getComponent().getHeight() - 20);
+            }
+        });
+        displayPanel.setBounds(displayPanel.getX(), displayPanel.getY(), Integer.parseInt(width.getText()),
+                Integer.parseInt(height.getText()));
         this.drawNodesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addRandomNodes(displayPanel.getX() + displayPanel.getWidth(),
-                        displayPanel.getY() + displayPanel.getHeight(), displayPanel.getX(), displayPanel.getY(),
-                        Integer.parseInt(nodeNumber.getText()));
+                addRandomNodes((displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
+                        (displayPanel.getY() + displayPanel.getHeight() - Integer.parseInt(nodeRadius.getText())),
+                        displayPanel.getX(), displayPanel.getY(), Integer.parseInt(nodeNumber.getText()));
 
                 paintNodesToScreen((Graphics2D) displayPanel.getGraphics());
             }
@@ -74,6 +85,8 @@ public class PathingScreen extends JPanel {
 
                 displayPanel.setBounds(displayPanel.getX(), displayPanel.getY(), Integer.parseInt(width.getText()),
                         Integer.parseInt(height.getText()));
+                nodesOnScreen.removeAllElements();
+                edgesOnScreen.removeAllElements();
             }
         });
 
@@ -81,7 +94,7 @@ public class PathingScreen extends JPanel {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("bank_gui");
+        JFrame frame = new JFrame("Djikstra Simulation");
         frame.setContentPane(new PathingScreen().outerPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -138,10 +151,11 @@ public class PathingScreen extends JPanel {
 
     public void paintEdgesToScreen(Graphics2D g2) {
         for (Edge e : edgesOnScreen) {
-            g2.drawLine(e.getFrontNode().getX()+(Integer.parseInt(nodeRadius.getText())/2),
-                    e.getFrontNode().getY()+(Integer.parseInt(nodeRadius.getText())/2), e.getBackNode().getX(),
-                    e.getBackNode().getY());
+            g2.drawLine((e.getFrontNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                    (e.getFrontNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)), (e.getBackNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                    (e.getBackNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)));
         }
+
         repaint();
     }
 
@@ -157,7 +171,13 @@ public class PathingScreen extends JPanel {
             for (Node node : nodesOnScreen) {
 
                 for (int i = 0; i < r.nextInt(2) + 1; i++) {
-                    edgesOnScreen.add(new Edge(node, nodesOnScreen.elementAt(r.nextInt(nodesOnScreen.size()))));
+                    int targetNodeIndex = r.nextInt(nodesOnScreen.size());
+                    Edge tempEdge = new Edge(node, nodesOnScreen.elementAt(targetNodeIndex));
+                    node.addNeighbor(nodesOnScreen.elementAt(targetNodeIndex));
+                    nodesOnScreen.elementAt(targetNodeIndex).addNeighbor(node);
+                    edgesOnScreen.add(tempEdge);
+
+
                 }
             }
         } catch (NullPointerException p) {
