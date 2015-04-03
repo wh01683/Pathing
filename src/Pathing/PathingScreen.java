@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Line2D;
 import java.util.Random;
 import java.util.Vector;
 
@@ -53,7 +54,7 @@ public class PathingScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addRandomNodes((displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
-                        (displayPanel.getY() + displayPanel.getHeight() - Integer.parseInt(nodeRadius.getText())),
+                        (displayPanel.getY() + displayPanel.getHeight() - 200),
                         displayPanel.getX(), displayPanel.getY(), Integer.parseInt(nodeNumber.getText()));
 
                 paintNodesToScreen((Graphics2D) displayPanel.getGraphics());
@@ -151,9 +152,9 @@ public class PathingScreen extends JPanel {
 
     public void paintEdgesToScreen(Graphics2D g2) {
         for (Edge e : edgesOnScreen) {
-            g2.drawLine((e.getFrontNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+            g2.draw(new Line2D.Double(e.getFrontNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2),
                     (e.getFrontNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)), (e.getBackNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
-                    (e.getBackNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)));
+                    (e.getBackNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2))));
         }
 
         repaint();
