@@ -68,7 +68,6 @@ public class PathingScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent p) {
                 addRandomEdges();
-
                 paintEdgesToScreen((Graphics2D) displayPanel.getGraphics());
             }
         });
@@ -221,29 +220,38 @@ public class PathingScreen extends JPanel {
     public void delayedDijkstraTraversal(long delayTimer) {
 
         try {
-            Node source = priorityQueue.peek();
-            Node previousNode;
-            for (Node v : priorityQueue) {
+
+            Node source = nodesOnScreen.firstElement();
+            source.setDistanceFromSource(0);
+
+            for (Node v : nodesOnScreen) {
                 if (!(v.equals(source))) {
                     v.setDistanceFromSource(2000000000);
                 }
+                /*else{
+                    priorityQueue.add(v);
+                }*/
             }
 
-            while (!priorityQueue.isEmpty()) {
+            while (!unvisitedNodes.isEmpty()) {
                 Node current = priorityQueue.remove();
+                unvisitedNodes.remove(current);
 
                 for (Node n : current.getNeighbors()) {
+
                     double alt = current.getDistanceFromSource() + new Edge(current, n).getWeight();
 
                     if (alt < n.getDistanceFromSource()) {
                         paintSingleNode(current);
                         paintSingleEdge(new Edge(current, n));
                         paintSingleNode(n);
+                        unvisitedNodes.remove(n);
                         priorityQueue.remove(n);
                         n.setDistanceFromSource(alt);
                         priorityQueue.add(n);
-                        current = n;
+
                     }
+                    current = n;
                 }
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
 
@@ -329,7 +337,6 @@ public class PathingScreen extends JPanel {
         unvisitedNodes = new HashSet<>(nodePriorityQueue);
 
         Node source = priorityQueue.peek();
-        Node previousNode;
 
         for (Node v : priorityQueue) {
             if (!(v.equals(source))) {
