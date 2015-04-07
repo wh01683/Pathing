@@ -6,8 +6,8 @@ package Pathing;
 public class Edge {
 
     private double weight;
-    private Node frontNode;
-    private Node backNode;
+    private Node fromNode;
+    private Node toNode;
 
 
     /**
@@ -15,13 +15,13 @@ public class Edge {
      * edge as the distance (hypotenuse) between he two nodes using the X and Y coordinates of the front
      * and back nodes.
      * */
-    public Edge(Node newFrontNode, Node newBackNode){
+    public Edge(Node newFromNode, Node newToNode) {
 
-        this.frontNode = newFrontNode;
-        this.backNode = newBackNode;
+        this.fromNode = newFromNode;
+        this.toNode = newToNode;
         //calculates weight of the edge as the hypotenuse between the two nodes
-        this.weight = Math.sqrt(Math.pow(Math.abs(newFrontNode.getX()-newBackNode.getX()),2) +
-                Math.pow(Math.abs(newFrontNode.getY()-newBackNode.getY()),2));
+        this.weight = Math.sqrt(Math.pow(Math.abs(newFromNode.getX() - newToNode.getX()), 2) +
+                Math.pow(Math.abs(newFromNode.getY() - newToNode.getY()), 2));
     }
 
     /**
@@ -39,8 +39,8 @@ public class Edge {
      *
      * @return returns the front node of the current edge
      * */
-    public Node getFrontNode() {
-        return frontNode;
+    public Node getFromNode() {
+        return fromNode;
     }
 
     /**
@@ -49,8 +49,8 @@ public class Edge {
      *
      * @return returns the back node of the current edge
      * */
-    public Node getBackNode() {
-        return backNode;
+    public Node getToNode() {
+        return toNode;
     }
 
 }

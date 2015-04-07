@@ -173,10 +173,10 @@ public class PathingScreen extends JPanel {
     public void paintSingleEdge(Edge e, Color newColor) {
         Graphics2D red = (Graphics2D) displayPanel.getGraphics();
         red.setColor(newColor);
-        red.draw(new Line2D.Double((e.getFrontNode().getX()) + (Integer.parseInt(nodeRadius.getText()) / 2),
-                (e.getFrontNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)),
-                (e.getBackNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
-                (e.getBackNode().getY()) + (Integer.parseInt(nodeRadius.getText()) / 2)));
+        red.draw(new Line2D.Double((e.getFromNode().getX()) + (Integer.parseInt(nodeRadius.getText()) / 2),
+                (e.getFromNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                (e.getToNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                (e.getToNode().getY()) + (Integer.parseInt(nodeRadius.getText()) / 2)));
     }
 
     public void paintSingleNode(Node n, Color newColor) {
@@ -188,12 +188,10 @@ public class PathingScreen extends JPanel {
 
     public void paintEdgesToScreen(Graphics2D g2) {
         for (Edge e : edgesOnScreen) {
-            g2.draw(new Line2D.Double(e.getFrontNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2),
-                    (e.getFrontNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)), (e.getBackNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
-                    (e.getBackNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2))));
+            g2.draw(new Line2D.Double(e.getFromNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2),
+                    (e.getFromNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2)), (e.getToNode().getX() + (Integer.parseInt(nodeRadius.getText()) / 2)),
+                    (e.getToNode().getY() + (Integer.parseInt(nodeRadius.getText()) / 2))));
         }
-
-        populateDijsktraData();
         repaint();
     }
 
@@ -208,12 +206,15 @@ public class PathingScreen extends JPanel {
             for (Node node : nodesOnScreen) {
 
                 for (int i = 0; i < r.nextInt(2) + 1; i++) {
-                    int targetNodeIndex = r.nextInt(nodesOnScreen.size());
-                    Edge tempEdge = new Edge(node, nodesOnScreen.elementAt(targetNodeIndex));
-                    node.addNeighbor(nodesOnScreen.elementAt(targetNodeIndex));
-                    node.addEdge(tempEdge);
-                    nodesOnScreen.elementAt(targetNodeIndex).addNeighbor(node);
-                    nodesOnScreen.elementAt(targetNodeIndex).addEdge(tempEdge);
+                    Node tempToNode = nodesOnScreen.elementAt(r.nextInt(nodesOnScreen.size()));
+                    Edge tempEdge = new Edge(node, tempToNode);
+
+                    node.addNeighbor(tempToNode);
+                    node.addPathOut(tempEdge);
+
+                    tempToNode.addNeighbor(node);
+                    tempToNode.addPathIn(tempEdge);
+
                     edgesOnScreen.add(tempEdge);
                 }
             }
@@ -225,6 +226,16 @@ public class PathingScreen extends JPanel {
 
     public void delayedPrimsTraversal(long delayTimer) {
         try {
+            Comparator<Node> lowestDistance = new Comparator<Node>() {
+                @Override
+                public int compare(Node node, Node t1) {
+                    return (int) (node.getDistanceFromSource() - t1.getDistanceFromSource());
+                }
+            };
+
+            primsPriorityQueue = new PriorityQueue<>(nodesOnScreen.size(), lowestDistance);
+            primsPriorityQueue.addAll(nodesOnScreen);
+
             mstNodes = new HashSet<>(nodesOnScreen.size());
             Node previous = null;
 
@@ -233,7 +244,7 @@ public class PathingScreen extends JPanel {
 
             for (Node n : nodesOnScreen) {
                 if (!(n.equals(source))) {
-                    n.setDistanceFromSource(2000000000);
+                    n.setDistanceFromSource(Double.POSITIVE_INFINITY);
                 }
 
             }
@@ -283,47 +294,60 @@ public class PathingScreen extends JPanel {
         try {
             dijkstraNodes = new HashSet<>(nodesOnScreen.size());
 
-            Node source = nodesOnScreen.firstElement();
-            Node previous = null;
-            for (Node v : nodesOnScreen) {
-                if (!(v.equals(source))) {
-                    v.setDistanceFromSource(2000000000);
+            Comparator<Node> lowestDistance = new Comparator<Node>() {
+                @Override
+                public int compare(Node node1, Node node2) {
+                    return (int) (node1.getDistanceFromSource() - node2.getDistanceFromSource());
                 }
+            };
+            dijkstraPriorityQueue = new PriorityQueue<>(nodesOnScreen.size(), lowestDistance);
+
+            Node currentNode = nodesOnScreen.firstElement();
+            nodesOnScreen.remove(currentNode);
+            dijkstraPriorityQueue.add(currentNode);
+            Node previous = null;
+
+            for (Node v : nodesOnScreen) {
+                v.setDistanceFromSource(Double.POSITIVE_INFINITY);
             }
+
             dijkstraPriorityQueue.addAll(nodesOnScreen);
 
             boolean start = true;
 
             while (!(dijkstraNodes.containsAll(nodesOnScreen))) {
 
-                Node u = dijkstraPriorityQueue.remove();
-
                 if (!(previous == null)) {
-                    paintSingleEdge(new Edge(u, previous), Color.RED);
+                    currentNode = dijkstraPriorityQueue.remove();
+                    Edge temp = previous.specificEdge(currentNode);
+                    if (!(temp == null)) {
+                        paintSingleEdge(previous.specificEdge(currentNode), Color.RED);
+                    }
                 }
 
-                if (!(dijkstraNodes.contains(u))) {
+                if (!(dijkstraNodes.contains(currentNode))) {
 
                     if (start) {
-                        paintSingleNode(u, Color.CYAN);
+                        paintSingleNode(currentNode, Color.CYAN);
                         start = false;
                     } else {
+                        paintSingleNode(currentNode, Color.RED);
+                    }
+                    dijkstraNodes.add(currentNode);
 
-                        paintSingleNode(u, Color.RED);
-                        dijkstraNodes.add(u);
-
-                        for (Node n : u.getNeighbors()) {
-                            if ((u.getDistanceFromSource() + new Edge(u, n).getWeight())
-                                    < n.getDistanceFromSource()) {
-                                n.setDistanceFromSource(new Edge(u, n).getWeight() + u.getDistanceFromSource());
+                    for (Node neighborNode : currentNode.getNeighbors()) {
+                        if ((currentNode.getDistanceFromSource() + distance(currentNode, neighborNode))
+                                < neighborNode.getDistanceFromSource()) {
+                            neighborNode.setDistanceFromSource(distance(currentNode, neighborNode) + currentNode.getDistanceFromSource());
                             }
                         }
                     }
-                    previous = u;
-                }
+                previous = currentNode;
+
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
 
-            }
+                }
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -331,49 +355,22 @@ public class PathingScreen extends JPanel {
         }
     }
 
-    /**
-     * populates static node priority queue with nodes from the current nodesOnScreen vector
-     */
-    public void populateDijsktraData() {
+    private double distance(Node node1, Node node2) {
 
+        return Math.sqrt(Math.pow(Math.abs(node1.getX() - node2.getX()), 2) +
+                Math.pow(Math.abs(node1.getY() - node2.getY()), 2));
 
-        Comparator<Node> lowestDistance = new Comparator<Node>() {
+    }
+
+    private Edge minEdge(Vector<Edge> edges) {
+
+        Comparator<Edge> lowWeight = new Comparator<Edge>() {
             @Override
-            public int compare(Node node, Node t1) {
-                return (int) Math.abs(node.getDistanceFromSource() - node.getDistanceFromSource());
+            public int compare(Edge edge1, Edge edge2) {
+                return (int) Math.abs(edge1.getWeight() - edge2.getWeight());
             }
         };
 
-        dijkstraPriorityQueue = new PriorityQueue<>(nodesOnScreen.size(), lowestDistance);
-        dijkstraPriorityQueue.addAll(nodesOnScreen);
-
-        primsPriorityQueue = new PriorityQueue<>(nodesOnScreen.size(), lowestDistance);
-        primsPriorityQueue.addAll(nodesOnScreen);
-
-
+        return Collections.min(edges, lowWeight);
     }
-
-    /**
-     * gets the minimum edge of the given edge vector
-     *
-     * @param edges edge vector passed to method
-     * @return returns edge with the minimum weight
-     */
-    public Edge minEdge(Vector<Edge> edges) {
-        Edge minEdge = edges.firstElement();
-
-        for (Edge e : edges) {
-            if (e.getWeight() < minEdge.getWeight()) {
-                minEdge = e;
-            }
-        }
-        return minEdge;
-    }
-
-    public Node getMinKeyNode(Vector<Node> vector) {
-
-        return null;
-
-    }
-
 }
