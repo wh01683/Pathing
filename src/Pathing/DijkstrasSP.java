@@ -45,6 +45,7 @@ public class DijkstrasSP {
                         v.setDistanceFromSource(u.specificEdge(v).getWeight() + u.getDistanceFromSource()); //update distance
                         vertices.add(v); //add vertices to 
                         screen.paintSingleEdge(u.specificEdge(v), Color.BLACK);
+                        u.specificEdge(v).setColor("BLACK");
                         v.setPredecessor(u);
                     }
                 }

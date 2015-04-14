@@ -8,6 +8,7 @@ public class Edge {
     private double weight;
     private Node fromNode;
     private Node toNode;
+    private String color = "WHITE";
 
 
     /**
@@ -53,4 +54,11 @@ public class Edge {
         return toNode;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 }

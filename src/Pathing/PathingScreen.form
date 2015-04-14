@@ -192,6 +192,14 @@
                   <text value="Prim's Spanning Tree"/>
                 </properties>
               </component>
+              <component id="5ba12" class="javax.swing.JButton" binding="eraseXtraEdgesButton" default-binding="true">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Erase Xtra Edges"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <grid id="fd802" binding="displayPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

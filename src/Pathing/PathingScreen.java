@@ -35,6 +35,7 @@ public class PathingScreen extends JPanel {
     private JTextField nodeRadius;
     private JButton resizeButton;
     private JButton primsSpanningTree;
+    private JButton eraseXtraEdgesButton;
     private Random r = new Random();
 
     public PathingScreen() {
@@ -53,13 +54,13 @@ public class PathingScreen extends JPanel {
 
 
             this.drawNodesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graph = new Graph(Integer.parseInt(nodeNumber.getText()), (displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
-                        (displayPanel.getY() + displayPanel.getHeight() - 200), displayPanel.getX(), displayPanel.getY());
-                paintNodesToScreen(Color.WHITE);
-            }
-        });
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    graph = new Graph(Integer.parseInt(nodeNumber.getText()), (displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
+                            (displayPanel.getY() + displayPanel.getHeight() - 200), displayPanel.getX(), displayPanel.getY());
+                    paintNodesToScreen(Color.WHITE);
+                }
+            });
 
 
         this.drawEdgesButton.addActionListener(new ActionListener() {
@@ -105,6 +106,12 @@ public class PathingScreen extends JPanel {
             }
 
         });
+            this.eraseXtraEdgesButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    eraseUnusedLines();
+                }
+            });
         } catch (NullPointerException n) {
             n.printStackTrace();
         }
@@ -167,6 +174,14 @@ public class PathingScreen extends JPanel {
             paintSingleEdge(e, newColor);
         }
         repaint();
+    }
+
+    public void eraseUnusedLines() {
+        for (Edge e : Graph.getEdgeSet()) {
+            if (e.getColor().equalsIgnoreCase("WHITE")) {
+                paintSingleEdge(e, displayPanel.getBackground());
+            }
+        }
     }
 
 }

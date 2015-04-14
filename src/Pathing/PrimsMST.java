@@ -45,6 +45,7 @@ public class PrimsMST {
                         v.setDistanceFromSource(u.specificEdge(v).getWeight()); //update distance
                         vertices.add(v); //add vertices to
                         screen.paintSingleEdge(u.specificEdge(v), Color.BLACK);
+                        u.specificEdge(v).setColor("BLACK");
                         v.setPredecessor(u);
                     }
                 }
