@@ -62,6 +62,8 @@ public class Graph {
                     Node tempToNode = nodeSet.get(r.nextInt(nodeSet.size()));
                     Edge tempEdge = new Edge(node, tempToNode);
                     Edge tempEdge2 = new Edge(tempToNode, node);
+                    tempEdge.setColor("WHITE");
+                    tempEdge2.setColor("WHITE");
 
                     node.addNeighbor(tempToNode);
                     node.addEdge(tempEdge);

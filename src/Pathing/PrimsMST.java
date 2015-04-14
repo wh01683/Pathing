@@ -43,8 +43,6 @@ public class PrimsMST {
                     if (!v.isDiscovered() && (u.specificEdge(v).getWeight() < v.getDistanceFromSource())) {
                         v.setDistanceFromSource(u.specificEdge(v).getWeight()); //update distance
                         vertices.add(v); //add vertices to
-                        screen.paintSingleEdge(u.specificEdge(v), Color.BLACK);
-                        u.specificEdge(v).setColor("BLACK");
                         v.setPredecessor(u);
                     }
                 }
@@ -55,6 +53,9 @@ public class PrimsMST {
                     screen.paintSingleNode(u, Color.GREEN);
                 } else {
                     screen.paintSingleNode(u, Color.BLACK);
+                    screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
+                    u.specificEdge(u.getPredecessor()).setColor("BLACK");
+
                 }
 
                 TimeUnit.MILLISECONDS.sleep(delayTimer);

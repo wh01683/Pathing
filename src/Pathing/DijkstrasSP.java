@@ -43,8 +43,6 @@ public class DijkstrasSP {
                         v.setDistanceFromSource(u.specificEdge(v).getWeight() + u.getDistanceFromSource()); //update distance
                         vertices.add(v); //add vertices to 
                         v.setPredecessor(u);
-                        screen.paintSingleEdge(u.specificEdge(v), Color.BLACK);
-                        u.specificEdge(v).setColor("BLACK");
                     }
                     screen.paintSingleNode(u, Color.RED);
                 }
@@ -53,6 +51,8 @@ public class DijkstrasSP {
                     screen.paintSingleNode(u, Color.GREEN);
                 } else {
                     screen.paintSingleNode(u, Color.BLACK);
+                    screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
+                    u.specificEdge(u.getPredecessor()).setColor("BLACK");
                 }
 
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
