@@ -1,8 +1,8 @@
 package Pathing;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Created by robert on 3/26/2015.
@@ -11,19 +11,22 @@ public class Node implements Comparator<Node>, Comparable<Node> {
 
     private static int radius = 16;
     private int x;
-
-
     private int y;
+    private boolean discovered;
+    private Node predecessor;
     private double distanceFromSource = 0;
-    private Vector<Node> neighbors = new Vector<>(3);
-    private Vector<Edge> pathsOut = new Vector<>(3);
-
-    private Vector<Edge> pathsIn = new Vector<>(3);
+    private ArrayList<Node> neighbors = new ArrayList<>(3);
+    private ArrayList<Edge> edges = new ArrayList<>(3);
     private Random r = new Random();
 
     public Node(int newX, int newY){
         this.x = newX;
         this.y = newY;
+    }
+
+    public static double distance(Node node1, Node node2) {
+        return Math.sqrt(Math.pow(Math.abs(node1.getX() - node2.getX()), 2) +
+                Math.pow(Math.abs(node1.getY() - node2.getY()), 2));
     }
 
     public Node getRandomNode(int xHBounds, int yHBounds, int xLBounds, int yLBounds){
@@ -54,7 +57,7 @@ public class Node implements Comparator<Node>, Comparable<Node> {
         radius = newRadius;
     }
 
-    public Vector<Node> getNeighbors() {
+    public ArrayList<Node> getNeighbors() {
         return neighbors;
     }
 
@@ -62,20 +65,22 @@ public class Node implements Comparator<Node>, Comparable<Node> {
         this.neighbors.add(newNeighbor);
     }
 
-    public void addPathOut(Edge newEdge) {
-        this.pathsOut.add(newEdge);
+    public void addEdge(Edge newEdge) {
+        this.edges.add(newEdge);
     }
 
-    public void addPathIn(Edge newEdge) {
-        this.pathsIn.add(newEdge);
+    public ArrayList getEdges() {
+        return this.edges;
     }
 
-    public Vector getPathsOut() {
-        return this.pathsOut;
-    }
-
-    public Vector<Edge> getPathsIn() {
-        return pathsIn;
+    public Edge minEdge() {
+        Edge minEdge = edges.get(0);
+        for (Edge e : edges) {
+            if (e.getWeight() < minEdge.getWeight()) {
+                minEdge = e;
+            }
+        }
+        return minEdge;
     }
 
 
@@ -99,18 +104,27 @@ public class Node implements Comparator<Node>, Comparable<Node> {
 
     public Edge specificEdge(Node to) {
 
-        for (Edge e : pathsOut) {
-            if (e.getFromNode().equals(this)) {
-                for (Edge k : pathsIn) {
-                    if (k.getToNode().equals(to)) {
-                        if (e == k) {
-                            return k;
-                        }
-                    }
-                }
+        for (Edge e : this.edges) {
+            if (e.getToNode() == to) {
+                return e;
             }
         }
-
         return null;
+    }
+
+    public Node getPredecessor() {
+        return predecessor;
+    }
+
+    public void setPredecessor(Node predecessor) {
+        this.predecessor = predecessor;
+    }
+
+    public boolean isDiscovered() {
+        return discovered;
+    }
+
+    public void setDiscovered(boolean discovered) {
+        this.discovered = discovered;
     }
 }
