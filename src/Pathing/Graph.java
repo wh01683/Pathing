@@ -37,12 +37,16 @@ public class Graph {
      * @param xLBounds x coordinates of the new node will be greater than this value
      * @param yLBounds y coordinates of the new node will be greater than this value
      */
-    private void addRandomNodes(int amount, int xHBounds, int yHBounds, int xLBounds, int yLBounds) {
+    public static void addRandomNodes(int amount, int xHBounds, int yHBounds, int xLBounds, int yLBounds) {
         Node temp = new Node(1, 1);
 
         for (int i = 0; i < amount; i++) {
             nodeSet.add(temp.getRandomNode(xHBounds, yHBounds, xLBounds, yLBounds));
         }
+    }
+
+    public static void removeEdge(Edge e) {
+        edgeSet.remove(e);
     }
 
     /**
@@ -57,11 +61,15 @@ public class Graph {
 
                     Node tempToNode = nodeSet.get(r.nextInt(nodeSet.size()));
                     Edge tempEdge = new Edge(node, tempToNode);
+                    Edge tempEdge2 = new Edge(tempToNode, node);
 
                     node.addNeighbor(tempToNode);
                     node.addEdge(tempEdge);
+                    tempToNode.addNeighbor(node);
+                    tempToNode.addEdge(tempEdge2);
 
                     edgeSet.add(tempEdge);
+                    edgeSet.add(tempEdge2);
                 }
             }
         } catch (NullPointerException p) {

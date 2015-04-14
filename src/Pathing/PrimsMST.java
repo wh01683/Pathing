@@ -10,16 +10,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class PrimsMST {
 
-    public PrimsMST(Graph newGraph, Node root, PathingScreen screen, long delayTimer) throws NullPointerException {
-
-        Graph graph = newGraph;
+    public PrimsMST(Node root, PathingScreen screen, long delayTimer) throws NullPointerException {
 
         try {
         /*Comparator for Priority Queue*/
             Comparator<Node> lowestDistance = new Comparator<Node>() {
                 @Override
-                public int compare(Node node, Node t1) {
-                    return (int) (node.getDistanceFromSource() - t1.getDistanceFromSource());
+                public int compare(Node node1, Node node2) {
+                    return (int) (node1.getDistanceFromSource() - node2.getDistanceFromSource());
                 }
             };
 
@@ -30,6 +28,7 @@ public class PrimsMST {
                 screen.paintSingleNode(u, Color.WHITE);
                 u.setDiscovered(false);
             }
+
             root.setDistanceFromSource(0); //starting at root
             screen.paintSingleNode(root, Color.PINK);
             root.setPredecessor(null);

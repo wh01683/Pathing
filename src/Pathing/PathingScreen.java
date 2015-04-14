@@ -56,8 +56,15 @@ public class PathingScreen extends JPanel {
             this.drawNodesButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    graph = new Graph(Integer.parseInt(nodeNumber.getText()), (displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
-                            (displayPanel.getY() + displayPanel.getHeight() - 200), displayPanel.getX(), displayPanel.getY());
+
+                    if (graph == null) {
+                        graph = new Graph(Integer.parseInt(nodeNumber.getText()), (displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
+                                (displayPanel.getY() + displayPanel.getHeight() - 200), displayPanel.getX(), displayPanel.getY());
+                    } else {
+                        Graph.addRandomNodes(Integer.parseInt(nodeNumber.getText()), (displayPanel.getX() + displayPanel.getWidth() - Integer.parseInt(nodeRadius.getText())),
+                                (displayPanel.getY() + displayPanel.getHeight() - 200), displayPanel.getX(), displayPanel.getY());
+                    }
+
                     paintNodesToScreen(Color.WHITE);
                 }
             });
@@ -93,7 +100,7 @@ public class PathingScreen extends JPanel {
         this.delayedDjikstraSButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                DijkstrasSP dijkstrasSP = new DijkstrasSP(graph, Graph.getNodeSet().get(r.nextInt(Graph.getNodeSet().size())),
+                DijkstrasSP dijkstrasSP = new DijkstrasSP(Graph.getNodeSet().get(r.nextInt(Graph.getNodeSet().size())),
                         pathingScreen, Long.parseLong(delayInMilliseconds.getText()));
             }
         });
@@ -101,7 +108,7 @@ public class PathingScreen extends JPanel {
         this.primsSpanningTree.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                PrimsMST primsMST = new PrimsMST(graph, Graph.getNodeSet().get(r.nextInt(Graph.getNodeSet().size())),
+                PrimsMST primsMST = new PrimsMST(Graph.getNodeSet().get(r.nextInt(Graph.getNodeSet().size())),
                         pathingScreen, Long.parseLong(delayInMilliseconds.getText()));
             }
 
@@ -157,6 +164,9 @@ public class PathingScreen extends JPanel {
         Graphics2D graphics2D = (Graphics2D) displayPanel.getGraphics();
         graphics2D.setColor(newColor);
         graphics2D.fillOval(n.getX(), n.getY(), n.getRadius(), n.getRadius());
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.drawOval(n.getX(), n.getY(), n.getRadius(), n.getRadius());
+
 
     }
 
@@ -177,11 +187,14 @@ public class PathingScreen extends JPanel {
     }
 
     public void eraseUnusedLines() {
-        for (Edge e : Graph.getEdgeSet()) {
-            if (e.getColor().equalsIgnoreCase("WHITE")) {
-                paintSingleEdge(e, displayPanel.getBackground());
+        try {
+            for (Edge e : Graph.getEdgeSet()) {
+                if (e.getColor().equalsIgnoreCase("WHITE")) {
+                    paintSingleEdge(e, displayPanel.getBackground());
+                }
             }
+        } catch (NullPointerException n) {
+
         }
     }
-
 }

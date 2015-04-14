@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DijkstrasSP {
 
-    public DijkstrasSP(Graph newGraph, Node start, PathingScreen screen, long delayTimer) throws NullPointerException {
-
-        Graph graph = newGraph;
+    public DijkstrasSP(Node start, PathingScreen screen, long delayTimer) throws NullPointerException {
 
         try {
         /*Comparator for Priority Queue*/
@@ -44,10 +42,11 @@ public class DijkstrasSP {
                     if ((u.getDistanceFromSource() + u.specificEdge(v).getWeight()) < v.getDistanceFromSource()) {
                         v.setDistanceFromSource(u.specificEdge(v).getWeight() + u.getDistanceFromSource()); //update distance
                         vertices.add(v); //add vertices to 
+                        v.setPredecessor(u);
                         screen.paintSingleEdge(u.specificEdge(v), Color.BLACK);
                         u.specificEdge(v).setColor("BLACK");
-                        v.setPredecessor(u);
                     }
+                    screen.paintSingleNode(u, Color.RED);
                 }
 
                 if (u == start) {

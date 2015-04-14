@@ -8,7 +8,7 @@ public class Edge {
     private double weight;
     private Node fromNode;
     private Node toNode;
-    private String color = "WHITE";
+    private String color;
 
 
     /**
