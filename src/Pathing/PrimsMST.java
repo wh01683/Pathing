@@ -53,7 +53,6 @@ public class PrimsMST {
                     screen.paintSingleNode(u, Color.BLACK);
                     screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
                     Graph.addUsedEdge(u.specificEdge(u.getPredecessor()));
-                    Graph.addUsedEdge(u.getPredecessor().specificEdge(u));
                 }
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
             }

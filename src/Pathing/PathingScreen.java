@@ -244,7 +244,7 @@ public class PathingScreen extends JPanel {
 
         DefaultTableModel generalModel = (DefaultTableModel) generalInfo.getModel();
 
-        String[] generalInfoColumnHeaders = {"Total Nodes", "Total Edges", "Traversed Edges", "Weight of Graph", "Weight Used"};
+        String[] generalInfoColumnHeaders = {"Total Nodes", "Total Edges", "Traversed Edges", "Edges Used", "Weight of Graph", "Weight Used"};
 
         for (String s : generalInfoColumnHeaders) {
             generalModel.addColumn(s);

@@ -89,6 +89,7 @@ public class Graph {
     public static String[] getData() {
 
         int usedEdges = usedEdgeSet.keySet().size();
+        int traversedEdges = 0;
         double weightOfGraph = 0;
         double weightUsed = 0;
 
@@ -98,8 +99,11 @@ public class Graph {
         for (Edge k : usedEdgeSet.keySet()) {
             weightUsed += k.getWeight();
         }
+        for (Edge e : usedEdgeSet.keySet()) {
+            traversedEdges += usedEdgeSet.get(e);
+        }
 
-        String[] data = {totalNodes + "", totalEdges + "", usedEdges + "", (int) weightOfGraph + "", (int) weightUsed + ""};
+        String[] data = {totalNodes + "", totalEdges + "", traversedEdges + "", usedEdges + "", (int) weightOfGraph + "", (int) weightUsed + ""};
 
         return data;
 
