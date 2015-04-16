@@ -52,7 +52,8 @@ public class DijkstrasSP {
                 } else {
                     screen.paintSingleNode(u, Color.BLACK);
                     screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
-                    u.specificEdge(u.getPredecessor()).setColor("BLACK");
+                    Graph.addUsedEdge(u.specificEdge(u.getPredecessor()));
+                    Graph.addUsedEdge(u.getPredecessor().specificEdge(u));
                 }
 
                 TimeUnit.MILLISECONDS.sleep(delayTimer);

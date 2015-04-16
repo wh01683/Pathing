@@ -46,26 +46,20 @@ public class PrimsMST {
                         v.setPredecessor(u);
                     }
                 }
-
-
                 u.setDiscovered(true);
                 if (u == root) {
                     screen.paintSingleNode(u, Color.GREEN);
                 } else {
                     screen.paintSingleNode(u, Color.BLACK);
                     screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
-                    u.specificEdge(u.getPredecessor()).setColor("BLACK");
-
+                    Graph.addUsedEdge(u.specificEdge(u.getPredecessor()));
+                    Graph.addUsedEdge(u.getPredecessor().specificEdge(u));
                 }
-
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
             }
-
-
         } catch (InterruptedException e) {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 }

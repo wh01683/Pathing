@@ -1,6 +1,7 @@
 package Pathing;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Random;
 
 /**
@@ -10,6 +11,12 @@ public class Graph {
 
     private static ArrayList<Node> nodeSet;
     private static ArrayList<Edge> edgeSet;
+    private static Hashtable<Edge, Integer> usedEdgeSet;
+    private static Integer numberTraversedEdges = new Integer(0);
+    private static Integer numberUnusedEdges = new Integer(0);
+    private static Integer totalNodes = new Integer(0);
+    private static Integer totalEdges = new Integer(0);
+
     Random r = new Random();
     private PathingScreen pathingScreen;
 
@@ -42,11 +49,60 @@ public class Graph {
 
         for (int i = 0; i < amount; i++) {
             nodeSet.add(temp.getRandomNode(xHBounds, yHBounds, xLBounds, yLBounds));
+            totalNodes++;
         }
     }
 
     public static void removeEdge(Edge e) {
         edgeSet.remove(e);
+    }
+
+    public static void clear() {
+        edgeSet.removeAll(edgeSet);
+        nodeSet.removeAll(nodeSet);
+        usedEdgeSet.clear();
+        numberUnusedEdges = 0;
+        numberTraversedEdges = 0;
+        totalNodes = 0;
+        totalEdges = 0;
+    }
+
+    public static void addUsedEdge(Edge usedEdge) {
+        if (usedEdgeSet == null) {
+            usedEdgeSet = new Hashtable<Edge, Integer>(5);
+        }
+        if (!usedEdgeSet.containsKey(usedEdge)) {
+            usedEdgeSet.putIfAbsent(usedEdge, 0);
+        } else {
+            int uses = usedEdgeSet.get(usedEdge);
+            uses++;
+            usedEdgeSet.put(usedEdge, uses);
+        }
+
+        numberTraversedEdges++;
+    }
+
+    public static Hashtable<Edge, Integer> getUsedEdgeSet() {
+        return usedEdgeSet;
+    }
+
+    public static String[] getData() {
+
+        int usedEdges = usedEdgeSet.keySet().size();
+        double weightOfGraph = 0;
+        double weightUsed = 0;
+
+        for (Edge e : edgeSet) {
+            weightOfGraph += e.getWeight();
+        }
+        for (Edge k : usedEdgeSet.keySet()) {
+            weightUsed += k.getWeight();
+        }
+
+        String[] data = {totalNodes + "", totalEdges + "", usedEdges + "", (int) weightOfGraph + "", (int) weightUsed + ""};
+
+        return data;
+
     }
 
     /**
@@ -59,6 +115,7 @@ public class Graph {
             for (Node node : nodeSet) {
                 for (int i = 0; i < r.nextInt(2) + 1; i++) {
 
+                    totalEdges++;
                     Node tempToNode = nodeSet.get(r.nextInt(nodeSet.size()));
                     Edge tempEdge = new Edge(node, tempToNode);
                     Edge tempEdge2 = new Edge(tempToNode, node);

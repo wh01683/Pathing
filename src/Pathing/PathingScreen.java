@@ -2,12 +2,14 @@ package Pathing;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -36,11 +38,19 @@ public class PathingScreen extends JPanel {
     private JButton resizeButton;
     private JButton primsSpanningTree;
     private JButton eraseXtraEdgesButton;
+    private JPanel tableTabPanel;
+    private JTable edgeInfoTable;
+    private JTable generalInfo;
+    private JButton populateTableButton;
+    private JPanel graphTabPanel;
+    private JTabbedPane tabPane;
+
     private Random r = new Random();
 
     public PathingScreen() {
 
         try {
+
         displayPanel.setVisible(true);
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -51,7 +61,6 @@ public class PathingScreen extends JPanel {
         });
         displayPanel.setBounds(displayPanel.getX(), displayPanel.getY(), Integer.parseInt(width.getText()),
                 Integer.parseInt(height.getText()));
-
 
             this.drawNodesButton.addActionListener(new ActionListener() {
                 @Override
@@ -102,6 +111,8 @@ public class PathingScreen extends JPanel {
             public void actionPerformed(ActionEvent actionEvent) {
                 DijkstrasSP dijkstrasSP = new DijkstrasSP(Graph.getNodeSet().get(r.nextInt(Graph.getNodeSet().size())),
                         pathingScreen, Long.parseLong(delayInMilliseconds.getText()));
+
+
             }
         });
 
@@ -119,9 +130,17 @@ public class PathingScreen extends JPanel {
                     eraseUnusedLines();
                 }
             });
+
+            this.populateTableButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    populateTableInformation();
+                }
+            });
         } catch (NullPointerException n) {
             n.printStackTrace();
         }
+
     }
 
     public static void main(String[] args) {
@@ -132,6 +151,8 @@ public class PathingScreen extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
+
     }
 
     @Override
@@ -188,13 +209,51 @@ public class PathingScreen extends JPanel {
 
     public void eraseUnusedLines() {
         try {
-            for (Edge e : Graph.getEdgeSet()) {
-                if (e.getColor().equalsIgnoreCase("WHITE")) {
-                    paintSingleEdge(e, displayPanel.getBackground());
-                }
+            ArrayList<Edge> unusedEdges = Graph.getEdgeSet();
+            unusedEdges.removeAll(Graph.getUsedEdgeSet().keySet());
+            for (Edge e : unusedEdges) {
+                paintSingleEdge(e, displayPanel.getBackground());
+            }
+            for (Edge k : Graph.getUsedEdgeSet().keySet()) {
+                paintSingleEdge(k, Color.BLACK);
             }
         } catch (NullPointerException n) {
 
         }
     }
+
+    public void populateTableInformation() {
+
+        DefaultTableModel edgeTableModel = (DefaultTableModel) edgeInfoTable.getModel();
+        String[] edgeInfoColumnHeaders = {"Used Edges", "Times Traversed"};
+        for (String s : edgeInfoColumnHeaders) {
+            edgeTableModel.addColumn(s);
+        }
+        edgeTableModel.addRow(edgeInfoColumnHeaders);
+        String[][] edgeRowData = new String[Graph.getUsedEdgeSet().size()][2];
+        int i = 0;
+        for (Edge e : Graph.getUsedEdgeSet().keySet()) {
+            int p = Graph.getUsedEdgeSet().get(e);
+            edgeRowData[i][0] = "Edge " + i;
+            edgeRowData[i][1] = p + "";
+            edgeTableModel.addRow(edgeRowData[i]);
+            i++;
+        }
+
+        edgeInfoTable.setModel(edgeTableModel);
+
+        DefaultTableModel generalModel = (DefaultTableModel) generalInfo.getModel();
+
+        String[] generalInfoColumnHeaders = {"Total Nodes", "Total Edges", "Traversed Edges", "Weight of Graph", "Weight Used"};
+
+        for (String s : generalInfoColumnHeaders) {
+            generalModel.addColumn(s);
+        }
+        generalModel.addRow(generalInfoColumnHeaders);
+        generalModel.addRow(Graph.getData());
+        generalInfo.setModel(generalModel);
+
+
+    }
+
 }
