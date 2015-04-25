@@ -130,7 +130,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value="500"/>
+                      <text value="100"/>
                     </properties>
                   </component>
                 </children>
@@ -159,7 +159,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value="30"/>
+                      <text value="5"/>
                     </properties>
                   </component>
                   <hspacer id="88e94">

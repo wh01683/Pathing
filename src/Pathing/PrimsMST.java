@@ -31,7 +31,7 @@ public class PrimsMST {
 
             root.setDistanceFromSource(0); //starting at root
             screen.paintSingleNode(root, Color.PINK);
-            root.setPredecessor(null);
+            root.setPredecessor(root);
 
             PriorityQueue<Node> vertices = new PriorityQueue<>(lowestDistance);
             vertices.addAll(Graph.getNodeSet());
@@ -45,6 +45,7 @@ public class PrimsMST {
                         vertices.add(v); //add vertices to
                         v.setPredecessor(u);
                     }
+
                 }
                 u.setDiscovered(true);
                 if (u == root) {
@@ -52,13 +53,21 @@ public class PrimsMST {
                 } else {
                     screen.paintSingleNode(u, Color.BLACK);
                     screen.paintSingleEdge(u.specificEdge(u.getPredecessor()), Color.BLACK);
+
                     Graph.addUsedEdge(u.specificEdge(u.getPredecessor()));
                 }
                 TimeUnit.MILLISECONDS.sleep(delayTimer);
             }
+
+            for (Node n : Graph.getNodeSet()) {
+                screen.paintSingleEdge(n.specificEdge(n.getPredecessor()), Color.BLACK);
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             System.exit(1);
+        } catch (NullPointerException p) {
+            //don't care 'bout no null pointer
         }
     }
 }

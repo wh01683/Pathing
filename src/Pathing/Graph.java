@@ -9,8 +9,8 @@ import java.util.Random;
  */
 public class Graph {
 
-    private static ArrayList<Node> nodeSet;
-    private static ArrayList<Edge> edgeSet;
+    private static ArrayList<Node> nodeSet = new ArrayList<Node>(30);
+    private static ArrayList<Edge> edgeSet = new ArrayList<Edge>(30);
     private static Hashtable<Edge, Integer> usedEdgeSet;
     private static Integer numberTraversedEdges = new Integer(0);
     private static Integer numberUnusedEdges = new Integer(0);
@@ -23,8 +23,8 @@ public class Graph {
     public Graph(int numberNodes, int xHBounds, int yHBounds, int xLBounds, int yLBounds) {
         if (nodeSet == null) {
             nodeSet = new ArrayList<>(numberNodes);
-            addRandomNodes(numberNodes, xHBounds, yHBounds, xLBounds, yLBounds);
         }
+        addRandomNodes(numberNodes, xHBounds, yHBounds, xLBounds, yLBounds);
     }
 
     public static ArrayList<Node> getNodeSet() {
@@ -121,6 +121,10 @@ public class Graph {
 
                     totalEdges++;
                     Node tempToNode = nodeSet.get(r.nextInt(nodeSet.size()));
+
+                    while (node == tempToNode) {
+                        tempToNode = nodeSet.get(r.nextInt(nodeSet.size()));
+                    }
                     Edge tempEdge = new Edge(node, tempToNode);
                     Edge tempEdge2 = new Edge(tempToNode, node);
                     tempEdge.setColor("WHITE");
@@ -134,7 +138,8 @@ public class Graph {
                     edgeSet.add(tempEdge);
                     edgeSet.add(tempEdge2);
                 }
-            }
+                }
+
         } catch (NullPointerException p) {
             System.out.printf("Null pointer caught in Screen : addRandomEdges.\nLikely attempting to create a new edge with" +
                     " a node which does not exist.");
