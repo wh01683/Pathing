@@ -132,13 +132,14 @@ public class Graph {
 
                     node.addNeighbor(tempToNode);
                     node.addEdge(tempEdge);
+
                     tempToNode.addNeighbor(node);
                     tempToNode.addEdge(tempEdge2);
 
                     edgeSet.add(tempEdge);
                     edgeSet.add(tempEdge2);
                 }
-                }
+            }
 
         } catch (NullPointerException p) {
             System.out.printf("Null pointer caught in Screen : addRandomEdges.\nLikely attempting to create a new edge with" +
